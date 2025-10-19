@@ -80,7 +80,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Router>
+      <Router basename="/AnyMoj">
         <div className="app">
           <main className="app-main">
             <Suspense fallback={
