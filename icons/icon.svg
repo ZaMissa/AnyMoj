@@ -1,0 +1,24 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#2563eb" stroke="#1e40af" stroke-width="8"/>
+  
+  <!-- Computer/server icon -->
+  <rect x="128" y="160" width="256" height="192" rx="16" fill="#ffffff"/>
+  <rect x="144" y="176" width="224" height="128" rx="8" fill="#1e40af"/>
+  
+  <!-- Screen/content area -->
+  <rect x="160" y="192" width="192" height="96" rx="4" fill="#3b82f6"/>
+  
+  <!-- Power button -->
+  <circle cx="400" cy="200" r="12" fill="#10b981"/>
+  
+  <!-- Network/connection indicators -->
+  <circle cx="176" cy="304" r="4" fill="#10b981"/>
+  <circle cx="192" cy="304" r="4" fill="#10b981"/>
+  <circle cx="208" cy="304" r="4" fill="#6b7280"/>
+  <circle cx="224" cy="304" r="4" fill="#6b7280"/>
+  
+  <!-- Base/stand -->
+  <rect x="200" y="352" width="112" height="16" rx="8" fill="#ffffff"/>
+  <rect x="216" y="368" width="80" height="8" rx="4" fill="#ffffff"/>
+</svg>
