@@ -1,6 +1,6 @@
 {
   "name": "temp-app",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
