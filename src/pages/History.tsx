@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ConnectionHistory } from '../types/machine.types';
 import { indexedDBService } from '../services/indexedDB.service';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { formatRelativeTime } from '../utils/dateUtils';
 
 const History: React.FC = () => {
   const [history, setHistory] = useState<ConnectionHistory[]>([]);
@@ -28,14 +29,7 @@ const History: React.FC = () => {
   };
 
   const formatTimestamp = (date: Date) => {
-    const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
-    if (diffInMinutes < 10080) return `${Math.floor(diffInMinutes / 1440)}d ago`;
-    return date.toLocaleDateString();
+    return formatRelativeTime(date);
   };
 
   const getActionIcon = (action: ConnectionHistory['action']) => {

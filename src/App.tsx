@@ -7,6 +7,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
 import ToastContainer from './components/ToastContainer';
+import ThemeSelector from './components/ThemeSelector';
+import UpdateNotification from './components/UpdateNotification';
 import { useToast } from './hooks/useToast';
 import './App.css';
 
@@ -20,6 +22,8 @@ const Settings = React.lazy(() => import('./pages/Settings'));
 function App() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [isFirstLaunch, setIsFirstLaunch] = useState(false);
   const { initializeBackup } = useAutoBackup();
   const { toasts, removeToast, showSuccess } = useToast();
 
@@ -29,29 +33,40 @@ function App() {
         // Initialize IndexedDB
         await indexedDBService.initialize();
         
-        // Apply dark mode setting on app load
+        // Check if this is first launch or theme chooser requested
         const settings = await indexedDBService.getSettings();
-        if (settings?.darkMode) {
-          document.documentElement.classList.add('dark');
+        const isFirstTime = !settings || settings.darkMode === undefined;
+        const showThemeChooser = localStorage.getItem('showThemeChooser') === 'true';
+        
+        if (isFirstTime || showThemeChooser) {
+          // First launch or theme chooser requested - show theme selector
+          setIsFirstLaunch(isFirstTime);
+          setShowThemeSelector(true);
+          setIsInitialized(true); // Allow app to render so theme selector can show
+          
+          // Clear the flag if it was set
+          if (showThemeChooser) {
+            localStorage.removeItem('showThemeChooser');
+          }
         } else {
-          // Check system preference if no setting is saved
-          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          // Apply saved theme setting
+          if (settings.darkMode) {
             document.documentElement.classList.add('dark');
           } else {
             document.documentElement.classList.remove('dark');
           }
+          
+          // Initialize backup system
+          const backupResult = await initializeBackup();
+          
+          if (backupResult.restored) {
+            console.log('Data restored from backup');
+            showSuccess('Data Restored', 'Your data has been successfully restored from backup');
+          }
+          
+          setIsInitialized(true);
+          showSuccess('App Initialized', 'AnyMoj is ready to use');
         }
-        
-        // Initialize backup system
-        const backupResult = await initializeBackup();
-        
-        if (backupResult.restored) {
-          console.log('Data restored from backup');
-          showSuccess('Data Restored', 'Your data has been successfully restored from backup');
-        }
-        
-        setIsInitialized(true);
-        showSuccess('App Initialized', 'AnyMoj is ready to use');
       } catch (error) {
         console.error('App initialization failed:', error);
         setInitError(error instanceof Error ? error.message : 'Unknown error');
@@ -60,6 +75,43 @@ function App() {
 
     initializeApp();
   }, [initializeBackup, showSuccess]);
+
+  const handleThemeSelect = async (theme: 'light' | 'dark') => {
+    try {
+      // Apply theme immediately
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      // Save theme setting
+      const currentSettings = await indexedDBService.getSettings();
+      const updatedSettings = {
+        ...currentSettings,
+        darkMode: theme === 'dark'
+      };
+      await indexedDBService.updateSettings(updatedSettings);
+
+      // Initialize backup system after theme selection
+      if (isFirstLaunch) {
+        const backupResult = await initializeBackup();
+        
+        if (backupResult.restored) {
+          console.log('Data restored from backup');
+          showSuccess('Data Restored', 'Your data has been successfully restored from backup');
+        }
+        
+        showSuccess('Welcome!', 'AnyMoj is ready to use');
+      }
+
+      // Close theme selector
+      setShowThemeSelector(false);
+      setIsFirstLaunch(false);
+    } catch (error) {
+      console.error('Failed to save theme setting:', error);
+    }
+  };
 
   if (!isInitialized) {
     return (
@@ -102,6 +154,14 @@ function App() {
           <Navigation />
           <InstallPrompt />
           <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
+          <UpdateNotification />
+          {showThemeSelector && (
+            <ThemeSelector
+              onThemeSelect={handleThemeSelect}
+              isFirstLaunch={isFirstLaunch}
+              onClose={() => setShowThemeSelector(false)}
+            />
+          )}
         </div>
       </Router>
     </ErrorBoundary>

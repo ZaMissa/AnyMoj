@@ -5,6 +5,8 @@ import { indexedDBService } from '../services/indexedDB.service';
 import { useAutoBackupOnChange } from '../hooks/useAutoBackup';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AnydeskLaunchButton from '../components/AnydeskLaunchButton';
+import { formatRelativeTimeHours } from '../utils/dateUtils';
+import { versionService } from '../services/version.service';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -135,7 +137,10 @@ const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1 className="dashboard-title">Machine Manager</h1>
+        <div className="dashboard-title-section">
+          <h1 className="dashboard-title">Machine Manager</h1>
+          <span className="version-indicator">{versionService.getFormattedVersion()}</span>
+        </div>
         
         <div className="dashboard-stats">
           <div className="stat-card">
@@ -286,15 +291,7 @@ interface MachineCardProps {
 
 const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
   const formatLastAccessed = (date?: Date) => {
-    if (!date) return 'Never';
-    
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
-    return date.toLocaleDateString();
+    return formatRelativeTimeHours(date);
   };
 
   const handleLaunchResult = (result: any) => {

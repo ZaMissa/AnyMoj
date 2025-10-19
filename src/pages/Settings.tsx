@@ -4,6 +4,7 @@ import { indexedDBService } from '../services/indexedDB.service';
 import { backupService } from '../services/backup.service';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ExportImport from '../components/ExportImport';
+import VersionDisplay from '../components/VersionDisplay';
 import './Settings.css';
 
 const Settings: React.FC = () => {
@@ -22,6 +23,13 @@ const Settings: React.FC = () => {
       setLoading(true);
       const settingsData = await indexedDBService.getSettings();
       setSettings(settingsData);
+      
+      // Apply dark mode on load
+      if (settingsData?.darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     } catch (error) {
       console.error('Failed to load settings:', error);
     } finally {
@@ -38,9 +46,26 @@ const Settings: React.FC = () => {
     }
   };
 
-  const handleSettingChange = (field: keyof AppSettings, value: any) => {
+  const handleSettingChange = async (field: keyof AppSettings, value: any) => {
     if (settings) {
-      setSettings({ ...settings, [field]: value });
+      const newSettings = { ...settings, [field]: value };
+      setSettings(newSettings);
+      
+      // Apply dark mode immediately for better UX
+      if (field === 'darkMode') {
+        if (value) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        
+        // Auto-save dark mode setting immediately
+        try {
+          await indexedDBService.updateSettings(newSettings);
+        } catch (error) {
+          console.error('Failed to save dark mode setting:', error);
+        }
+      }
     }
   };
 
@@ -67,11 +92,9 @@ const Settings: React.FC = () => {
 
 
   const clearAllData = async () => {
-    if (!window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-      return;
-    }
-
-    if (!window.confirm('This will delete ALL machines, history, and settings. Are you absolutely sure?')) {
+    // Create a custom confirmation dialog with backup checkbox
+    const confirmed = await showBackupConfirmationDialog();
+    if (!confirmed) {
       return;
     }
 
@@ -85,12 +108,133 @@ const Settings: React.FC = () => {
       // Set a flag to prevent auto-restore on next load
       localStorage.setItem('skipAutoRestore', 'true');
       
-      alert('All data has been cleared. The app will reload.');
+      // Set a flag to show theme chooser after reload
+      localStorage.setItem('showThemeChooser', 'true');
+      
+      alert('All data has been cleared. The app will reload and show theme selection.');
       window.location.reload();
     } catch (error) {
       console.error('Failed to clear data:', error);
       alert('Failed to clear data. Please try again.');
     }
+  };
+
+  const showBackupConfirmationDialog = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      // Create modal overlay
+      const overlay = document.createElement('div');
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+      `;
+
+      // Create modal content
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      `;
+
+      modal.innerHTML = `
+        <h3 style="margin: 0 0 16px 0; color: #d32f2f; font-size: 18px;">⚠️ Clear All Data</h3>
+        <p style="margin: 0 0 16px 0; color: #333; line-height: 1.5;">
+          This will permanently delete ALL your machines, connection history, and settings. 
+          <strong>This action cannot be undone!</strong>
+        </p>
+        <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">
+          Before proceeding, please ensure you have exported your data as a backup.
+        </p>
+        <label style="display: flex; align-items: center; margin: 16px 0; cursor: pointer;">
+          <input type="checkbox" id="backup-confirmation" style="margin-right: 8px;">
+          <span style="color: #333; font-weight: 500;">
+            I confirm that I have made a backup of my data and understand this action is irreversible
+          </span>
+        </label>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+          <button id="cancel-btn" style="
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #333;
+          ">Cancel</button>
+          <button id="confirm-btn" style="
+            padding: 8px 16px;
+            border: none;
+            background: #d32f2f;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.5;
+          " disabled>Clear All Data</button>
+        </div>
+      `;
+
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+
+      const checkbox = modal.querySelector('#backup-confirmation') as HTMLInputElement;
+      const cancelBtn = modal.querySelector('#cancel-btn') as HTMLButtonElement;
+      const confirmBtn = modal.querySelector('#confirm-btn') as HTMLButtonElement;
+
+      // Enable/disable confirm button based on checkbox
+      const updateConfirmButton = () => {
+        if (checkbox.checked) {
+          confirmBtn.disabled = false;
+          confirmBtn.style.opacity = '1';
+        } else {
+          confirmBtn.disabled = true;
+          confirmBtn.style.opacity = '0.5';
+        }
+      };
+
+      checkbox.addEventListener('change', updateConfirmButton);
+
+      // Event handlers
+      cancelBtn.addEventListener('click', () => {
+        document.body.removeChild(overlay);
+        resolve(false);
+      });
+
+      confirmBtn.addEventListener('click', () => {
+        if (checkbox.checked) {
+          document.body.removeChild(overlay);
+          resolve(true);
+        }
+      });
+
+      // Close on overlay click
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          document.body.removeChild(overlay);
+          resolve(false);
+        }
+      });
+
+      // Close on Escape key
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          document.body.removeChild(overlay);
+          document.removeEventListener('keydown', handleEscape);
+          resolve(false);
+        }
+      };
+      document.addEventListener('keydown', handleEscape);
+    });
   };
 
   const handleImportComplete = async (result: any) => {
@@ -213,6 +357,12 @@ const Settings: React.FC = () => {
           machines={machines} 
           onImportComplete={handleImportComplete}
         />
+
+        {/* App Information */}
+        <div className="settings-section">
+          <h3>App Information</h3>
+          <VersionDisplay showUpdateButton={true} />
+        </div>
 
         {/* Save Button */}
         <div className="settings-actions">

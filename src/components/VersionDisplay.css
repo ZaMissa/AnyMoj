@@ -1,0 +1,170 @@
+/* Version Display Component Styles */
+
+.version-display {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+}
+
+.version-display:hover {
+  border-color: var(--color-border-hover);
+  background-color: var(--color-surface-hover);
+}
+
+.version-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.version-text {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.update-badge {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.version-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.version-toggle-btn:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+.version-details {
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    transform: translateY(0);
+  }
+}
+
+.version-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+}
+
+.version-detail-item:last-of-type {
+  margin-bottom: var(--spacing-sm);
+}
+
+.detail-label {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.detail-value {
+  color: var(--color-text);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.version-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.version-actions .btn {
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  min-height: 28px;
+}
+
+/* Compact version for settings page */
+.version-display.compact {
+  padding: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+}
+
+.version-display.compact .version-details {
+  margin-top: var(--spacing-xs);
+  padding-top: var(--spacing-xs);
+}
+
+/* Inline version for header */
+.version-display.inline {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--font-size-xs);
+}
+
+.version-display.inline .version-info {
+  gap: var(--spacing-xs);
+}
+
+.version-display.inline .version-toggle-btn {
+  display: none;
+}
+
+.version-display.inline .version-details {
+  display: none;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .version-actions {
+    flex-direction: column;
+  }
+  
+  .version-actions .btn {
+    width: 100%;
+  }
+  
+  .version-detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}

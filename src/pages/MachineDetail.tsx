@@ -4,6 +4,8 @@ import { Machine, AnyDeskLaunchResult } from '../types/machine.types';
 import { indexedDBService } from '../services/indexedDB.service';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AnydeskLaunchButton from '../components/AnydeskLaunchButton';
+import { formatDate } from '../utils/dateUtils';
+import { copyWithFeedback } from '../utils/clipboardUtils';
 import './MachineDetail.css';
 
 // Password item component with show/hide functionality
@@ -23,12 +25,10 @@ const PasswordItem: React.FC<{ password: string; index: number }> = ({ password,
       </button>
       <button 
         className="btn btn-sm btn-secondary"
-        onClick={() => {
-          navigator.clipboard.writeText(password);
-          alert('Password copied to clipboard!');
-        }}
+        onClick={() => copyWithFeedback(password, 'Password copied to clipboard!')}
+        title="Copy password"
       >
-        Copy
+        📋 Copy
       </button>
     </div>
   );
@@ -112,10 +112,7 @@ const MachineDetail: React.FC = () => {
               <span className="machine-id">{machine.id}</span>
               <button
                 className="btn btn-secondary btn-sm copy-btn"
-                onClick={() => {
-                  navigator.clipboard.writeText(machine.id);
-                  alert('Machine ID copied to clipboard!');
-                }}
+                onClick={() => copyWithFeedback(machine.id, 'Machine ID copied to clipboard!')}
                 title="Copy Machine ID"
               >
                 📋 Copy ID
@@ -126,10 +123,7 @@ const MachineDetail: React.FC = () => {
               <span className="anydesk-id">{machine.anydeskId}</span>
               <button
                 className="btn btn-secondary btn-sm copy-btn"
-                onClick={() => {
-                  navigator.clipboard.writeText(machine.anydeskId);
-                  alert('AnyDesk ID copied to clipboard!');
-                }}
+                onClick={() => copyWithFeedback(machine.anydeskId, 'AnyDesk ID copied to clipboard!')}
                 title="Copy AnyDesk ID"
               >
                 📋 Copy ID
@@ -150,12 +144,12 @@ const MachineDetail: React.FC = () => {
             )}
             <div className="info-item">
               <label>Created</label>
-              <span>{machine.createdAt.toLocaleDateString()}</span>
+              <span>{formatDate(machine.createdAt)}</span>
             </div>
             {machine.lastAccessed && (
               <div className="info-item">
                 <label>Last Accessed</label>
-                <span>{machine.lastAccessed.toLocaleDateString()}</span>
+                <span>{formatDate(machine.lastAccessed)}</span>
               </div>
             )}
             <div className="info-item">

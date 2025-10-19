@@ -51,6 +51,9 @@ class IndexedDBService {
 
       // Initialize default settings if they don't exist
       await this.initializeDefaultSettings();
+      
+      // Migrate existing settings to include groups field
+      await this.migrateSettings();
     } catch (error) {
       console.error('Failed to initialize IndexedDB:', error);
       throw new Error('Database initialization failed');
@@ -64,15 +67,31 @@ class IndexedDBService {
     if (!existingSettings) {
       const defaultSettings: AppSettings = {
         id: 'app-settings',
-        darkMode: false,
+        darkMode: true,
         autoBackup: true,
         defaultEncryption: false,
         categories: ['Work', 'Personal', 'Server', 'Development'],
         customFieldDefinitions: [],
         lastBackupDate: undefined,
+        groups: [],
       };
 
       await this.db.add('settings', defaultSettings);
+    }
+  }
+
+  private async migrateSettings(): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+
+    const existingSettings = await this.db.get('settings', 'app-settings');
+    if (existingSettings && !existingSettings.groups) {
+      // Add groups field to existing settings
+      const migratedSettings: AppSettings = {
+        ...existingSettings,
+        groups: [],
+      };
+
+      await this.db.put('settings', migratedSettings);
     }
   }
 

@@ -7,6 +7,7 @@ export interface Machine {
   notes?: string;
   categories: string[];
   tags: string[];
+  groupId?: string; // Reference to group
   customFields: CustomField[];
   createdAt: Date;
   updatedAt: Date;
@@ -19,6 +20,16 @@ export interface CustomField {
   key: string;
   value: string;
   type: 'text' | 'password' | 'url' | 'number';
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  createdAt: Date;
+  updatedAt: Date;
+  machineCount: number;
 }
 
 export interface ConnectionHistory {
@@ -37,6 +48,7 @@ export interface AppSettings {
   categories: string[];
   customFieldDefinitions: CustomFieldDefinition[];
   lastBackupDate?: Date;
+  groups: Group[];
 }
 
 export interface CustomFieldDefinition {
