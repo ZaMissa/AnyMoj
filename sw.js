@@ -5,13 +5,12 @@ const DYNAMIC_CACHE = 'anymoj-dynamic-v1';
 
 // Files to cache immediately
 const STATIC_ASSETS = [
-  '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  '/favicon.ico'
+  '/AnyMoj/',
+  '/AnyMoj/index.html',
+  '/AnyMoj/manifest.json',
+  '/AnyMoj/icons/icon-192x192.png',
+  '/AnyMoj/icons/icon-512x512.png',
+  '/AnyMoj/favicon.ico'
 ];
 
 // Install event - cache static assets
@@ -58,8 +57,7 @@ self.addEventListener('activate', (event) => {
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  const url = new URL(request.url);
-
+  
   // Skip non-GET requests
   if (request.method !== 'GET') {
     return;
@@ -70,85 +68,78 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Strategy: Cache First for static assets, Network First for API calls
-  if (isStaticAsset(request.url)) {
-    // Cache First strategy for static assets
-    event.respondWith(
-      caches.match(request)
-        .then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          return fetch(request)
-            .then((response) => {
-              // Don't cache non-successful responses
-              if (!response || response.status !== 200 || response.type !== 'basic') {
-                return response;
-              }
-              
-              // Cache the response
-              const responseToCache = response.clone();
-              caches.open(DYNAMIC_CACHE)
-                .then((cache) => {
-                  cache.put(request, responseToCache);
-                });
-              
-              return response;
-            })
-            .catch(() => {
-              // Return offline fallback for navigation requests
-              if (request.mode === 'navigate') {
-                return caches.match('/');
-              }
-              throw new Error('Network error');
-            });
-        })
-    );
-  } else {
-    // Network First strategy for dynamic content
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Don't cache non-successful responses
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          // Cache successful responses
-          const responseToCache = response.clone();
-          caches.open(DYNAMIC_CACHE)
-            .then((cache) => {
-              cache.put(request, responseToCache);
-            });
-          
-          return response;
-        })
-        .catch(() => {
-          // Fallback to cache if network fails
-          return caches.match(request)
-            .then((cachedResponse) => {
-              if (cachedResponse) {
-                return cachedResponse;
-              }
-              
-              // Return offline fallback for navigation requests
-              if (request.mode === 'navigate') {
-                return caches.match('/');
-              }
-              
-              throw new Error('Offline and no cache available');
-            });
-        })
-    );
+  // Skip external requests (not from our domain)
+  try {
+    const url = new URL(request.url);
+    if (!url.hostname.includes('zamissa.github.io')) {
+      return;
+    }
+  } catch (e) {
+    return;
   }
+
+  event.respondWith(
+    handleFetchRequest(request)
+  );
 });
+
+// Handle fetch requests with proper error handling
+async function handleFetchRequest(request) {
+  try {
+    // Try cache first for static assets
+    if (isStaticAsset(request.url)) {
+      const cachedResponse = await caches.match(request);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+    }
+
+    // Try network
+    const networkResponse = await fetch(request);
+    
+    // Only cache successful responses
+    if (networkResponse && networkResponse.status === 200) {
+      const responseToCache = networkResponse.clone();
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, responseToCache);
+    }
+    
+    return networkResponse;
+    
+  } catch (error) {
+    console.log('Network request failed, trying cache:', request.url);
+    
+    // Try cache as fallback
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // For navigation requests, return the main page
+    if (request.mode === 'navigate') {
+      const fallbackResponse = await caches.match('/AnyMoj/');
+      if (fallbackResponse) {
+        return fallbackResponse;
+      }
+    }
+    
+    // If all else fails, return a proper error response
+    return new Response('Offline - Content not available', {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: new Headers({
+        'Content-Type': 'text/plain'
+      })
+    });
+  }
+}
 
 // Helper function to determine if a request is for a static asset
 function isStaticAsset(url) {
-  return url.includes('/static/') ||
-         url.includes('/icons/') ||
-         url.includes('/manifest.json') ||
-         url.includes('/favicon.ico') ||
+  return url.includes('/AnyMoj/static/') ||
+         url.includes('/AnyMoj/icons/') ||
+         url.includes('/AnyMoj/manifest.json') ||
+         url.includes('/AnyMoj/favicon.ico') ||
          url.endsWith('.js') ||
          url.endsWith('.css') ||
          url.endsWith('.png') ||
