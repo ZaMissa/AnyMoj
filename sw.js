@@ -123,6 +123,14 @@ async function handleFetchRequest(request) {
       }
     }
     
+    // For JavaScript chunks, return a minimal response to prevent ChunkLoadError
+    if (request.url.includes('.js') && request.url.includes('/static/js/')) {
+      return new Response('// Chunk not available offline', {
+        status: 200,
+        headers: { 'Content-Type': 'application/javascript' }
+      });
+    }
+    
     // If all else fails, return a proper error response
     return new Response('Offline - Content not available', {
       status: 503,
@@ -140,6 +148,7 @@ function isStaticAsset(url) {
          url.includes('/AnyMoj/icons/') ||
          url.includes('/AnyMoj/manifest.json') ||
          url.includes('/AnyMoj/favicon.ico') ||
+         url.includes('/AnyMoj/index.html') ||
          url.endsWith('.js') ||
          url.endsWith('.css') ||
          url.endsWith('.png') ||
