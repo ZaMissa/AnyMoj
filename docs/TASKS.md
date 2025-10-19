@@ -1,4 +1,22 @@
-# Task Breakdown
+# 📋 AnyMoj Task Breakdown
+
+## 🚀 **QUICK NAVIGATION**
+
+### 📊 **Status Overview**
+- **Total Tasks:** 48
+- **Completed:** 32 (67%)
+- **In Progress:** 3 (6%)
+- **Pending:** 13 (27%)
+
+### 🔗 **Cross-References**
+- **[📊 Dashboard](./TRACKING-DASHBOARD.md)** - Real-time status overview
+- **[🐛 Issues](./BUGS-ISSUES.md)** - Related bug tracking
+- **[📈 Progress](./PROGRESS-TRACKER.md)** - Progress tracking
+- **[🛠️ Decisions](./DECISIONS.md)** - Technical decisions
+
+---
+
+## 📋 **TASK BREAKDOWN**
 
 ## Phase 1: Project Setup & Core Infrastructure
 
@@ -377,8 +395,106 @@
 ---
 
 ## Notes
+---
+
+## Phase 7: Enhanced User Experience & Advanced Features
+
+### 7.1 Fix Dark Mode Switch @pending
+- [ ] Investigate dark mode toggle functionality
+- [ ] Check CSS variable updates and theme application
+- [ ] Fix theme switching logic
+- [ ] Test dark mode persistence
+- **Estimated:** 2 hours
+- **Files:** src/pages/Settings.tsx, src/index.css, src/App.tsx
+- **Issue Reference:** #013
+
+### 7.2 Add Copy ID Functionality @pending
+- [ ] Add copy-to-clipboard buttons for AnyDesk ID
+- [ ] Add copy-to-clipboard buttons for machine ID
+- [ ] Implement clipboard API integration
+- [ ] Add visual feedback for successful copy
+- [ ] Test on different browsers and devices
+- **Estimated:** 2 hours
+- **Files:** src/pages/MachineDetail.tsx
+- **Issue Reference:** #014
+
+### 7.3 Implement Machine Grouping System @pending
+- [ ] Design group management interface
+- [ ] Add group creation and editing functionality
+- [ ] Implement drag-and-drop grouping
+- [ ] Add group-based filtering and search
+- [ ] Create bulk operations for grouped machines
+- [ ] Update database schema for groups
+- **Estimated:** 6 hours
+- **Files:** src/components/MachineGroup.tsx, src/services/indexedDB.service.ts
+
+### 7.4 Enhanced Sharing Options @pending
+- [ ] Add WhatsApp sharing option
+- [ ] Add Viber sharing option
+- [ ] Add email sharing option
+- [ ] Implement auto-launch for messaging apps
+- [ ] Add QR code generation for quick sharing
+- [ ] Test sharing functionality on mobile devices
+- **Estimated:** 4 hours
+- **Files:** src/components/ShareOptions.tsx, src/services/export.service.ts
+
+### 7.5 Auto-Backup Management Enhancement @pending
+- [ ] Display last backup timestamp in settings
+- [ ] Add "View Backup" button functionality
+- [ ] Implement backup history display
+- [ ] Add backup size and storage information
+- [ ] Create backup management interface
+- **Estimated:** 3 hours
+- **Files:** src/pages/Settings.tsx, src/services/backup.service.ts
+
+---
+
+## Phase 8: Developer Tools & Privacy
+
+### 8.1 Offline-First Architecture Verification @pending
+- [ ] Verify no data is sent to external servers
+- [ ] Ensure app updates only from GitHub Pages
+- [ ] Complete offline functionality testing
+- [ ] Document privacy-first design principles
+- [ ] Remove any unnecessary external dependencies
+- **Estimated:** 3 hours
+- **Files:** All service files, network requests audit
+
+### 8.2 Developer Analytics System (Optional) @pending
+- [ ] Design optional telemetry system (user consent required)
+- [ ] Implement error reporting system
+- [ ] Add usage statistics (anonymized)
+- [ ] Create performance monitoring
+- [ ] Ensure complete user control over data sharing
+- **Estimated:** 8 hours
+- **Files:** src/services/analytics.service.ts, src/components/PrivacySettings.tsx
+
+### 8.3 PWA Update Notification System @pending
+- [ ] Add version tracking to app manifest
+- [ ] Implement service worker update detection
+- [ ] Create update notification component
+- [ ] Add version comparison logic
+- [ ] Implement update installation process
+- [ ] Test update flow without data loss
+- [ ] Add update status display in settings
+- **Estimated:** 5 hours
+- **Files:** public/manifest.json, src/services/update.service.ts, src/components/UpdateNotification.tsx
+
+### Phase 7.6: Enhanced Data Safety - Backup Confirmation (#020)
+- [ ] Add backup confirmation checkbox to Clear All Data dialog
+- [ ] Update confirmation text to emphasize backup importance
+- [ ] Disable Clear All Data button until checkbox is checked
+- [ ] Test backup confirmation flow
+- **Estimated:** 2 hours
+- **Files:** src/pages/Settings.tsx
+- **Priority:** Medium (User Safety)
+
+---
+
+## Notes
 - Update task status when starting or completing work
 - Add completion dates when marking @completed
 - Add file references as work progresses
 - Break down tasks further if needed
+- Reference issue IDs from BUGS-ISSUES.md when applicable
 
