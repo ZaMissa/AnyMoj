@@ -30,7 +30,7 @@ class VersionService {
   getCurrentVersion(): string {
     // In a real app, this would be injected at build time
     // For now, we'll use a hardcoded version that matches package.json
-    return '1.0.3';
+    return '1.0.4';
   }
 
   /**
@@ -218,6 +218,7 @@ class VersionService {
   private getReleaseNotes(version: string): string {
     const releaseNotes: Record<string, string> = {
       '1.1.0': 'New features: Enhanced theme selection, improved copy functionality, and better user experience.',
+      '1.0.4': 'UI enhancement: Added animated version badge with teal gradient and slide-in animation.',
       '1.0.3': 'Visual enhancement: Added animated "New" badge to dashboard header with gradient styling.',
       '1.0.2': 'Minor updates: Disabled automatic update notifications and improved version management.',
       '1.0.1': 'Bug fixes and performance improvements.',

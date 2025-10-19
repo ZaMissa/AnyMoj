@@ -66,6 +66,29 @@
   100% { transform: scale(1); }
 }
 
+.version-badge {
+  background: linear-gradient(45deg, #4ecdc4, #44a08d);
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  animation: slideIn 0.5s ease-out;
+  box-shadow: 0 2px 4px rgba(78, 205, 196, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideIn {
+  0% { 
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .dashboard-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));

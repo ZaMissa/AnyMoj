@@ -141,6 +141,7 @@ const Dashboard: React.FC = () => {
           <h1 className="dashboard-title">Machine Manager</h1>
           <span className="version-indicator">{versionService.getFormattedVersion()}</span>
           <span className="new-feature-badge">✨ New</span>
+          <span className="version-badge">v1.0.4</span>
         </div>
         
         <div className="dashboard-stats">
