@@ -86,18 +86,16 @@ self.addEventListener('fetch', (event) => {
 // Handle fetch requests with proper error handling
 async function handleFetchRequest(request) {
   try {
-    // Try cache first for static assets
-    if (isStaticAsset(request.url)) {
-      const cachedResponse = await caches.match(request);
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+    // Try cache first for all assets (including chunks)
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
     }
 
     // Try network
     const networkResponse = await fetch(request);
     
-    // Only cache successful responses
+    // Cache successful responses in dynamic cache
     if (networkResponse && networkResponse.status === 200) {
       const responseToCache = networkResponse.clone();
       const cache = await caches.open(DYNAMIC_CACHE);
