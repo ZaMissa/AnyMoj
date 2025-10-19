@@ -156,8 +156,17 @@ class VersionService {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // For demo purposes, always return a newer version for testing
-    return '1.1.0';
+    // For demo purposes, sometimes return a newer version
+    const random = Math.random();
+    if (random < 0.1) {
+      // 10% chance of "newer" version (much less frequent)
+      return '1.1.0';
+    } else if (random < 0.15) {
+      return '1.0.2';
+    }
+    
+    // 85% chance of same version (no update)
+    return this.getCurrentVersion();
   }
 
   /**

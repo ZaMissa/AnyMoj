@@ -154,7 +154,7 @@ function App() {
           <Navigation />
           <InstallPrompt />
           <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
-          <UpdateNotification />
+          <UpdateNotification autoCheck={false} />
           {showThemeSelector && (
             <ThemeSelector
               onThemeSelect={handleThemeSelect}
