@@ -129,6 +129,14 @@ async function handleFetchRequest(request) {
       });
     }
     
+    // For CSS chunks, return a minimal response to prevent ChunkLoadError
+    if (request.url.includes('.css') && request.url.includes('/static/css/')) {
+      return new Response('/* CSS chunk not available offline */', {
+        status: 200,
+        headers: { 'Content-Type': 'text/css' }
+      });
+    }
+    
     // If all else fails, return a proper error response
     return new Response('Offline - Content not available', {
       status: 503,
