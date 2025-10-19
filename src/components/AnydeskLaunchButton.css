@@ -1,0 +1,189 @@
+/* AnyDesk Launch Button styles */
+
+.anydesk-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.anydesk-launch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.anydesk-launch-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+}
+
+.anydesk-launch-btn-text {
+  font-size: inherit;
+}
+
+/* Size variants */
+.anydesk-launch-btn-sm {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  min-height: 28px;
+}
+
+.anydesk-launch-btn-md {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  min-height: 36px;
+}
+
+.anydesk-launch-btn-lg {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  min-height: 44px;
+}
+
+/* Style variants */
+.anydesk-launch-btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+}
+
+.anydesk-launch-btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.anydesk-launch-btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.anydesk-launch-btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.anydesk-launch-btn-icon {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+.anydesk-launch-btn-icon:hover:not(:disabled) {
+  background-color: var(--color-primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* State variants */
+.anydesk-launch-btn-loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.anydesk-launch-btn-success {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.anydesk-launch-btn-error {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+/* Icon-only variant */
+.anydesk-launch-btn-icon .anydesk-launch-btn-text {
+  display: none;
+}
+
+/* Loading state */
+.anydesk-launch-btn-loading .anydesk-launch-btn-text {
+  opacity: 0.7;
+}
+
+/* Success/Error states with animation */
+.anydesk-launch-btn-success,
+.anydesk-launch-btn-error {
+  animation: resultFlash 0.6s ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes resultFlash {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .anydesk-launch-btn-lg {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    min-height: 40px;
+  }
+  
+  .anydesk-launch-btn-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Focus styles for accessibility */
+.anydesk-launch-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.3);
+}
+
+.anydesk-launch-btn:focus:not(:focus-visible) {
+  box-shadow: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .anydesk-launch-btn {
+    border-width: 2px;
+  }
+  
+  .anydesk-launch-btn-primary {
+    background-color: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+  
+  .anydesk-launch-btn-secondary {
+    background-color: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+}
