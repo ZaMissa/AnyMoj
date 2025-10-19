@@ -108,8 +108,32 @@ const MachineDetail: React.FC = () => {
           <h3>Basic Information</h3>
           <div className="info-grid">
             <div className="info-item">
+              <label>Machine ID</label>
+              <span className="machine-id">{machine.id}</span>
+              <button
+                className="btn btn-secondary btn-sm copy-btn"
+                onClick={() => {
+                  navigator.clipboard.writeText(machine.id);
+                  alert('Machine ID copied to clipboard!');
+                }}
+                title="Copy Machine ID"
+              >
+                📋 Copy ID
+              </button>
+            </div>
+            <div className="info-item">
               <label>AnyDesk ID</label>
               <span className="anydesk-id">{machine.anydeskId}</span>
+              <button
+                className="btn btn-secondary btn-sm copy-btn"
+                onClick={() => {
+                  navigator.clipboard.writeText(machine.anydeskId);
+                  alert('AnyDesk ID copied to clipboard!');
+                }}
+                title="Copy AnyDesk ID"
+              >
+                📋 Copy ID
+              </button>
               <AnydeskLaunchButton
                 machineId={machine.id}
                 machineName={machine.name}

@@ -68,20 +68,18 @@
   --transition-slow: 350ms ease-in-out;
 }
 
-/* Dark theme */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: var(--color-dark-primary);
-    --color-primary-hover: var(--color-dark-primary-hover);
-    --color-secondary: var(--color-dark-secondary);
-    --color-background: var(--color-dark-background);
-    --color-surface: var(--color-dark-surface);
-    --color-surface-hover: var(--color-dark-surface-hover);
-    --color-text: var(--color-dark-text);
-    --color-text-secondary: var(--color-dark-text-secondary);
-    --color-border: var(--color-dark-border);
-    --color-border-hover: var(--color-dark-border-hover);
-  }
+/* Light theme (default) */
+:root {
+  --color-primary: var(--color-light-primary);
+  --color-primary-hover: var(--color-light-primary-hover);
+  --color-secondary: var(--color-light-secondary);
+  --color-background: var(--color-light-background);
+  --color-surface: var(--color-light-surface);
+  --color-surface-hover: var(--color-light-surface-hover);
+  --color-text: var(--color-light-text);
+  --color-text-secondary: var(--color-light-text-secondary);
+  --color-border: var(--color-light-border);
+  --color-border-hover: var(--color-light-border-hover);
 }
 
 /* Manual dark mode class */
