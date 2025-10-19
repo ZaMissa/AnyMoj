@@ -1,7 +1,7 @@
 // Service Worker for AnyMoj PWA
-const CACHE_NAME = 'anymoj-v2';
-const STATIC_CACHE = 'anymoj-static-v2';
-const DYNAMIC_CACHE = 'anymoj-dynamic-v2';
+const CACHE_NAME = 'anymoj-v3';
+const STATIC_CACHE = 'anymoj-static-v3';
+const DYNAMIC_CACHE = 'anymoj-dynamic-v3';
 
 // Files to cache immediately
 const STATIC_ASSETS = [
