@@ -112,24 +112,23 @@ class VersionService {
     const currentVersion = this.getCurrentVersion();
     
     try {
-      // Simulate API call - in real implementation, this would fetch from your version API
-      // For now, we'll use a simple simulation
-      const simulatedLatestVersion = await this.simulateVersionCheck();
+      // Check for real version updates
+      const latestVersion = await this.checkRealVersion();
       
-      const hasUpdate = this.compareVersions(simulatedLatestVersion, currentVersion) > 0;
+      const hasUpdate = this.compareVersions(latestVersion, currentVersion) > 0;
       
       const result: VersionCheckResult = {
         hasUpdate,
         currentVersion,
-        latestVersion: simulatedLatestVersion,
+        latestVersion: latestVersion,
         updateUrl: hasUpdate ? 'https://zamissa.github.io/AnyMoj/' : undefined,
-        releaseNotes: hasUpdate ? this.getReleaseNotes(simulatedLatestVersion) : undefined
+        releaseNotes: hasUpdate ? this.getReleaseNotes(latestVersion) : undefined
       };
 
       // Update stored version info
       const versionInfo: VersionInfo = {
         current: currentVersion,
-        latest: simulatedLatestVersion,
+        latest: latestVersion,
         isUpdateAvailable: hasUpdate,
         lastChecked: new Date(),
         updateUrl: result.updateUrl
@@ -150,23 +149,46 @@ class VersionService {
   }
 
   /**
-   * Simulate version check - replace with real API call
+   * Check for real version updates - replace with actual API call
    */
-  private async simulateVersionCheck(): Promise<string> {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo purposes, sometimes return a newer version
-    const random = Math.random();
-    if (random < 0.1) {
-      // 10% chance of "newer" version (much less frequent)
-      return '1.1.0';
-    } else if (random < 0.15) {
-      return '1.0.2';
+  private async checkRealVersion(): Promise<string> {
+    try {
+      // Check if there's a test version set for real updates
+      const testVersion = this.getTestVersion();
+      if (testVersion !== this.getCurrentVersion()) {
+        return testVersion;
+      }
+
+      // TODO: Replace with real API call to your version endpoint
+      // For now, return current version (no updates available)
+      // In production, this would fetch from: https://api.yoursite.com/version
+      
+      // Example of what a real implementation would look like:
+      // const response = await fetch('https://api.yoursite.com/version');
+      // const data = await response.json();
+      // return data.latestVersion;
+      
+      return this.getCurrentVersion();
+    } catch (error) {
+      console.error('Failed to check for real version updates:', error);
+      return this.getCurrentVersion();
     }
-    
-    // 85% chance of same version (no update)
-    return this.getCurrentVersion();
+  }
+
+  /**
+   * Manually set a new version for testing real updates
+   * This should be called when you want to push a real update
+   */
+  setNewVersion(version: string): void {
+    // Store the new version in localStorage for testing
+    localStorage.setItem('anymoj_test_version', version);
+  }
+
+  /**
+   * Get the test version if set, otherwise return current version
+   */
+  private getTestVersion(): string {
+    return localStorage.getItem('anymoj_test_version') || this.getCurrentVersion();
   }
 
   /**
@@ -196,6 +218,7 @@ class VersionService {
   private getReleaseNotes(version: string): string {
     const releaseNotes: Record<string, string> = {
       '1.1.0': 'New features: Enhanced theme selection, improved copy functionality, and better user experience.',
+      '1.0.2': 'Minor updates: Disabled automatic update notifications and improved version management.',
       '1.0.1': 'Bug fixes and performance improvements.',
       '1.0.0': 'Initial release with core AnyMoj functionality.'
     };
