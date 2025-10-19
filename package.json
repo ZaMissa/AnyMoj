@@ -29,7 +29,7 @@
     "eject": "react-scripts eject",
     "deploy": "npm run build && gh-pages -d build"
   },
-  "homepage": "https://username.github.io/AnyMoj",
+  "homepage": "https://zamissa.github.io/AnyMoj",
   "eslintConfig": {
     "extends": [
       "react-app",

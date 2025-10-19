@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { indexedDBService } from './services/indexedDB.service';
 import { useAutoBackup } from './hooks/useAutoBackup';
 import Navigation from './components/Navigation';
@@ -80,7 +80,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Router basename="/AnyMoj">
+      <Router>
         <div className="app">
           <main className="app-main">
             <Suspense fallback={
