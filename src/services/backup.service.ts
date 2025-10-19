@@ -211,13 +211,6 @@ class BackupService {
     );
   }
 
-  /**
-   * Clears the LocalStorage backup
-   */
-  clearBackup(): void {
-    localStorage.removeItem(this.BACKUP_KEY);
-    console.log('LocalStorage backup cleared');
-  }
 
   /**
    * Gets backup file size in bytes
@@ -267,6 +260,19 @@ class BackupService {
         availableSpace: 0,
         backupSize: 0,
       };
+    }
+  }
+
+  /**
+   * Clears the backup from LocalStorage
+   */
+  async clearBackup(): Promise<void> {
+    try {
+      localStorage.removeItem(this.BACKUP_KEY);
+      console.log('Backup cleared from LocalStorage');
+    } catch (error) {
+      console.error('Failed to clear backup:', error);
+      throw error;
     }
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppSettings, Machine } from '../types/machine.types';
 import { indexedDBService } from '../services/indexedDB.service';
+import { backupService } from '../services/backup.service';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ExportImport from '../components/ExportImport';
 import './Settings.css';
@@ -75,7 +76,15 @@ const Settings: React.FC = () => {
     }
 
     try {
+      // Clear backup first to prevent auto-restore
+      await backupService.clearBackup();
+      
+      // Clear all data from IndexedDB
       await indexedDBService.clearAllData();
+      
+      // Set a flag to prevent auto-restore on next load
+      localStorage.setItem('skipAutoRestore', 'true');
+      
       alert('All data has been cleared. The app will reload.');
       window.location.reload();
     } catch (error) {

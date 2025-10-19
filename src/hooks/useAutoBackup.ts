@@ -51,6 +51,17 @@ export const useAutoBackup = () => {
     hasBackup: boolean;
   }> => {
     try {
+      // Check if we should skip auto-restore (after manual clear)
+      const skipAutoRestore = localStorage.getItem('skipAutoRestore');
+      if (skipAutoRestore === 'true') {
+        localStorage.removeItem('skipAutoRestore');
+        console.log('Skipping auto-restore due to manual clear');
+        return {
+          restored: false,
+          hasBackup: false,
+        };
+      }
+
       // Check if IndexedDB is empty
       const dbSize = await indexedDBService.getDatabaseSize();
       const isEmpty = dbSize.machines === 0 && dbSize.history === 0;
