@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { versionService, VersionInfo } from '../services/version.service';
+import UpdateConfirmation from './UpdateConfirmation';
 import './VersionDisplay.css';
 
 interface VersionDisplayProps {
@@ -14,6 +15,7 @@ const VersionDisplay: React.FC<VersionDisplayProps> = ({
   const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     loadVersionInfo();
@@ -37,11 +39,23 @@ const VersionDisplay: React.FC<VersionDisplayProps> = ({
   };
 
   const handleUpdate = () => {
-    if (versionInfo?.updateUrl) {
-      window.open(versionInfo.updateUrl, '_blank');
-    } else {
-      // Fallback to page reload
-      window.location.reload();
+    if (versionInfo) {
+      setShowConfirmation(true);
+    }
+  };
+
+  const handleConfirmUpdate = async () => {
+    if (versionInfo) {
+      try {
+        await versionService.performUpdateWithConfirmation(
+          versionInfo.current,
+          versionInfo.latest
+        );
+        setShowConfirmation(false);
+        // The actual update will be handled by the confirmation component
+      } catch (error) {
+        console.error('Failed to initiate update:', error);
+      }
     }
   };
 
@@ -50,69 +64,81 @@ const VersionDisplay: React.FC<VersionDisplayProps> = ({
   }
 
   return (
-    <div className={`version-display ${className}`}>
-      <div className="version-info">
-        <span className="version-text">
-          {versionService.getFormattedVersion()}
-        </span>
-        
-        {versionInfo.isUpdateAvailable && (
-          <span className="update-badge">
-            Update Available
+    <>
+      <div className={`version-display ${className}`}>
+        <div className="version-info">
+          <span className="version-text">
+            {versionService.getFormattedVersion()}
           </span>
+          
+          {versionInfo.isUpdateAvailable && (
+            <span className="update-badge">
+              Update Available
+            </span>
+          )}
+          
+          <button
+            className="version-toggle-btn"
+            onClick={() => setShowDetails(!showDetails)}
+            title={showDetails ? 'Hide details' : 'Show details'}
+          >
+            {showDetails ? '▼' : '▶'}
+          </button>
+        </div>
+
+        {showDetails && (
+          <div className="version-details">
+            <div className="version-detail-item">
+              <span className="detail-label">Current:</span>
+              <span className="detail-value">v{versionInfo.current}</span>
+            </div>
+            
+            <div className="version-detail-item">
+              <span className="detail-label">Latest:</span>
+              <span className="detail-value">v{versionInfo.latest}</span>
+            </div>
+            
+            {versionInfo.lastChecked && (
+              <div className="version-detail-item">
+                <span className="detail-label">Last checked:</span>
+                <span className="detail-value">
+                  {versionInfo.lastChecked.toLocaleDateString()} {versionInfo.lastChecked.toLocaleTimeString()}
+                </span>
+              </div>
+            )}
+
+            <div className="version-actions">
+              <button
+                className="btn btn-sm btn-secondary"
+                onClick={handleCheckForUpdates}
+                disabled={isChecking}
+              >
+                {isChecking ? 'Checking...' : 'Check for Updates'}
+              </button>
+              
+              {versionInfo.isUpdateAvailable && showUpdateButton && (
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={handleUpdate}
+                >
+                  Update Now
+                </button>
+              )}
+            </div>
+          </div>
         )}
-        
-        <button
-          className="version-toggle-btn"
-          onClick={() => setShowDetails(!showDetails)}
-          title={showDetails ? 'Hide details' : 'Show details'}
-        >
-          {showDetails ? '▼' : '▶'}
-        </button>
       </div>
 
-      {showDetails && (
-        <div className="version-details">
-          <div className="version-detail-item">
-            <span className="detail-label">Current:</span>
-            <span className="detail-value">v{versionInfo.current}</span>
-          </div>
-          
-          <div className="version-detail-item">
-            <span className="detail-label">Latest:</span>
-            <span className="detail-value">v{versionInfo.latest}</span>
-          </div>
-          
-          {versionInfo.lastChecked && (
-            <div className="version-detail-item">
-              <span className="detail-label">Last checked:</span>
-              <span className="detail-value">
-                {versionInfo.lastChecked.toLocaleDateString()} {versionInfo.lastChecked.toLocaleTimeString()}
-              </span>
-            </div>
-          )}
-
-          <div className="version-actions">
-            <button
-              className="btn btn-sm btn-secondary"
-              onClick={handleCheckForUpdates}
-              disabled={isChecking}
-            >
-              {isChecking ? 'Checking...' : 'Check for Updates'}
-            </button>
-            
-            {versionInfo.isUpdateAvailable && showUpdateButton && (
-              <button
-                className="btn btn-sm btn-primary"
-                onClick={handleUpdate}
-              >
-                Update Now
-              </button>
-            )}
-          </div>
-        </div>
+      {showConfirmation && versionInfo && (
+        <UpdateConfirmation
+          isOpen={showConfirmation}
+          onClose={() => setShowConfirmation(false)}
+          onConfirm={handleConfirmUpdate}
+          currentVersion={versionInfo.current}
+          newVersion={versionInfo.latest}
+        />
       )}
-    </div>
+    </>
   );
 };
 

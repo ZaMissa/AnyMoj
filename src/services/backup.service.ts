@@ -213,6 +213,27 @@ class BackupService {
 
 
   /**
+   * Gets the latest backup data
+   */
+  async getLatestBackup(): Promise<BackupData | null> {
+    try {
+      const backupString = localStorage.getItem(this.BACKUP_KEY);
+      if (!backupString) {
+        return null;
+      }
+
+      const backup: BackupData = JSON.parse(backupString);
+      if (this.validateBackupData(backup)) {
+        return backup;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to get latest backup:', error);
+      return null;
+    }
+  }
+
+  /**
    * Gets backup file size in bytes
    */
   async getBackupSize(): Promise<number> {

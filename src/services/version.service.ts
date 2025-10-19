@@ -262,6 +262,122 @@ class VersionService {
     localStorage.removeItem(this.VERSION_KEY);
     localStorage.removeItem(this.LAST_CHECK_KEY);
   }
+
+  /**
+   * Update the app to the latest version
+   */
+  async updateApp(): Promise<void> {
+    // In a real implementation, this would:
+    // 1. Download the new version
+    // 2. Install it
+    // 3. Restart the app
+    
+    // For now, we'll just reload the page
+    window.location.reload();
+  }
+
+  /**
+   * Perform update with confirmation and backup check
+   */
+  async performUpdateWithConfirmation(
+    currentVersion: string,
+    newVersion: string,
+    releaseNotes?: string
+  ): Promise<void> {
+    // This will be called by the UpdateConfirmation component
+    // The actual update logic is handled there
+    return new Promise((resolve) => {
+      // Store update info for the confirmation dialog
+      localStorage.setItem('pending_update', JSON.stringify({
+        currentVersion,
+        newVersion,
+        releaseNotes,
+        timestamp: Date.now()
+      }));
+      resolve();
+    });
+  }
+
+  /**
+   * Execute the pending update
+   */
+  async executePendingUpdate(): Promise<void> {
+    try {
+      // Create a final backup before update
+      const { backupService } = await import('./backup.service');
+      await backupService.createAutoBackup();
+      
+      // Clear pending update info
+      localStorage.removeItem('pending_update');
+      
+      // Perform data consistency check
+      await this.performDataConsistencyCheck();
+      
+      // Reload the page to apply update
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to execute update:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Perform data consistency check after update
+   */
+  private async performDataConsistencyCheck(): Promise<void> {
+    try {
+      const { indexedDBService } = await import('./indexedDB.service');
+      
+      // Check if database is accessible by trying to get settings
+      try {
+        const settings = await indexedDBService.getSettings();
+        if (!settings) {
+          console.warn('Database connection check failed after update');
+          return;
+        }
+      } catch (error) {
+        console.warn('Database connection check failed after update:', error);
+        return;
+      }
+
+      // Check if settings are valid
+      const settings = await indexedDBService.getSettings();
+      if (!settings) {
+        console.warn('Settings validation failed after update');
+        return;
+      }
+
+      // Check if machines data is accessible
+      const machines = await indexedDBService.getAllMachines();
+      console.log(`Data consistency check passed: ${machines.length} machines found`);
+
+    } catch (error) {
+      console.error('Data consistency check failed:', error);
+      // Don't throw error - just log it
+    }
+  }
+
+  /**
+   * Get pending update info
+   */
+  getPendingUpdate(): { currentVersion: string; newVersion: string; releaseNotes?: string } | null {
+    try {
+      const pending = localStorage.getItem('pending_update');
+      if (pending) {
+        const updateInfo = JSON.parse(pending);
+        // Check if update is recent (within 1 hour)
+        const age = Date.now() - updateInfo.timestamp;
+        if (age < 60 * 60 * 1000) {
+          return updateInfo;
+        } else {
+          localStorage.removeItem('pending_update');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get pending update:', error);
+    }
+    return null;
+  }
 }
 
 export const versionService = new VersionService();

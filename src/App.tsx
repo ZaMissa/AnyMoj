@@ -9,6 +9,7 @@ import InstallPrompt from './components/InstallPrompt';
 import ToastContainer from './components/ToastContainer';
 import ThemeSelector from './components/ThemeSelector';
 import UpdateNotification from './components/UpdateNotification';
+import UpdateHandler from './components/UpdateHandler';
 import { useToast } from './hooks/useToast';
 import './App.css';
 
@@ -155,6 +156,7 @@ function App() {
           <InstallPrompt />
           <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
           <UpdateNotification autoCheck={false} />
+          <UpdateHandler />
           {showThemeSelector && (
             <ThemeSelector
               onThemeSelect={handleThemeSelect}
